@@ -46,7 +46,7 @@ class ResultBuilder:
         return new_row
     
     def _create_initial_articles(self, input_file):
-        with open('/home/vinpalace/FCService/data/pricat.csv') as csvfile:
+        with open(input_file) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
 
             # process each row
@@ -69,4 +69,6 @@ class ResultBuilder:
             self.catalog.articles = articles
 
     def make_result(self):
-        return json.dumps(self.catalog)
+        json_data = json.dumps(self.catalog,  default=lambda o: o.__dict__)
+        with open('data/result.json', 'w') as json_file:
+            json_file.write(json_data)
