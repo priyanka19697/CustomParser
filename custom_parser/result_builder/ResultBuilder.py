@@ -34,9 +34,13 @@ class ResultBuilder:
     def __init__(self, input_file, mapping_provider: MappingProvider) -> None:
         self.catalog = Catalog()
         self.mapping_provider = mapping_provider
-        self._create_initial_articles(input_file)
+        self.__create_initial_articles(input_file)
+    
+    def make_result(self):
+        self.__bubble_up()
+        return json.dumps(self.catalog, default=lambda o: o.__dict__)
 
-    def _process_row(self, row):
+    def process_row(self, row):
         new_row = {}
         supported_keys = self.mapping_provider.getSupportedKeys()
         available_destination_keys = self.mapping_provider.getAvailableDestinationKeys()
@@ -53,18 +57,14 @@ class ResultBuilder:
 
         return new_row
 
-    def make_result(self):
-        self._bubble_up()
-        return json.dumps(self.catalog, default=lambda o: o.__dict__)
-
-    def _create_initial_articles(self, input_file):
+    def __create_initial_articles(self, input_file):
         with open(input_file) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
 
             # process each row
             articles_dict = defaultdict(list)
             for row in reader:
-                articles_dict[row["article_number"]].append(self._process_row(row=row))
+                articles_dict[row["article_number"]].append(self.process_row(row=row))
 
             articles = []
             for article_number, article_variations in articles_dict.items():
@@ -80,7 +80,7 @@ class ResultBuilder:
 
             self.catalog.articles = articles
 
-    def _find_common_attributes(self, objects: list) -> list:
+    def __find_common_attributes(self, objects: list) -> list:
         # Takes in list of objects of same type, then returns
         # list of attributes that were common across all the objects
 
@@ -103,7 +103,7 @@ class ResultBuilder:
 
         return common_attrs
 
-    def _bubble_up_common_to_parent(self, parent_obj, nested_objects):
+    def __bubble_up_common_to_parent(self, parent_obj, nested_objects):
         # Takes in an object and a list of objects. From this list
         # of objects it finds attributes which have common values
         # (have same value in all the objects) then puts it in parent_obj
@@ -117,7 +117,7 @@ class ResultBuilder:
         # Returns
         #   None
 
-        common_attributes = self._find_common_attributes(nested_objects)
+        common_attributes = self.__find_common_attributes(nested_objects)
 
         reference_obj = nested_objects[0]  # just to get values to bubble up
 
@@ -128,8 +128,8 @@ class ResultBuilder:
             for attr in common_attributes:
                 delattr(nested_obj, attr)  # delete from child objects
 
-    def _bubble_up(self):
+    def __bubble_up(self):
         for article in self.catalog.articles:
-            self._bubble_up_common_to_parent(article, article.variations)
+            self.__bubble_up_common_to_parent(article, article.variations)
 
-        self._bubble_up_common_to_parent(self.catalog, self.catalog.articles)
+        self.__bubble_up_common_to_parent(self.catalog, self.catalog.articles)

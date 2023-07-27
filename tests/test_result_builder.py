@@ -33,7 +33,7 @@ class TestResultBuilder(unittest.TestCase):
 
         row = {'ean': '8719245200978', 'supplier': 'Rupesco BV', 'brand': 'Via Vai', 'catalog_code': '', 'collection': 'NW 17-18', 'season': 'winter', 'article_structure_code': '10', 'article_number': '15189-02', 'article_number_2': '15189-02 Aviation Nero',
                'article_number_3': 'Aviation', 'color_code': '1', 'size_group_code': 'EU', 'size_code': '38', 'size_name': '38', 'currency': 'EUR', 'price_buy_gross': '', 'price_buy_net': '58.5', 'discount_rate': '', 'price_sell': '139.95', 'material': 'Aviation', 'target_area': 'Woman Shoes'}
-        processed_row = self.result_builder._process_row(row)
+        processed_row = self.result_builder.process_row(row)
 
         self.assertEqual(processed_row['color'], "Nero")
         self.assertEqual(processed_row['article_number_3'], "Aviation")
