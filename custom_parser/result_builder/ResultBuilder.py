@@ -54,7 +54,7 @@ class ResultBuilder:
         return new_row
 
     def make_result(self):
-        self.bubble_up()
+        self._bubble_up()
         return json.dumps(self.catalog, default=lambda o: o.__dict__)
 
     def _create_initial_articles(self, input_file):
@@ -128,7 +128,7 @@ class ResultBuilder:
             for attr in common_attributes:
                 delattr(nested_obj, attr)  # delete from child objects
 
-    def bubble_up(self):
+    def _bubble_up(self):
         for article in self.catalog.articles:
             self._bubble_up_common_to_parent(article, article.variations)
 
