@@ -10,7 +10,7 @@ class Variation:
         return
 
     def to_json(self):
-        return json.dumps(self.__dict__,default=lambda obj: obj.__dict__)
+        return json.dumps(self.__dict__, default=lambda obj: obj.__dict__)
 
 
 class Article:
@@ -19,7 +19,7 @@ class Article:
         self.variations = []
 
     def to_json(self):
-        return json.dumps(self.__dict__,default=lambda obj: obj.__dict__)
+        return json.dumps(self.__dict__, default=lambda obj: obj.__dict__)
 
 
 class Catalog:
@@ -27,7 +27,7 @@ class Catalog:
         self.articles = []
 
     def to_json(self):
-        return json.dumps(self.__dict__,default=lambda obj: obj.__dict__)
+        return json.dumps(self.__dict__, default=lambda obj: obj.__dict__)
 
 
 class ResultBuilder:
