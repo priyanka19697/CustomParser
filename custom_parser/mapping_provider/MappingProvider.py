@@ -56,4 +56,20 @@ class MappingProvider:
         source_key_list = source_type.split(self.DELIMETER)
         value_mappings_key = self.DELIMETER.join([row[key] for key in source_key_list])
 
+        # TODO: Handle for bonus custom config feature, value mapping will be empty
+
         return value_mappings[value_mappings_key]
+    
+    # BONUS task:)
+    def add_new_mapping(self, keys):  # TODO: WIP
+        if len(set(keys)) != len(keys):
+            raise Exception("cannot have same keys")
+        # add to supported keys
+        self.supportedKeys.update(keys)
+        
+        # update our datastructure with new config
+        new_key = '_'.join(keys)
+        self.destinationTypeToValueMapping[new_key] = {
+            "source_type": self.DELIMETER.join(keys),
+            "value_mappings": None  # when mapping is None, just combine values with space
+        }
