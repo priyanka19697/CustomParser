@@ -1,4 +1,3 @@
-
 import csv
 from operator import itemgetter
 
@@ -44,7 +43,6 @@ class MappingProvider:
     def getSupportedKeys(self):
         return self.supportedKeys
 
-
     def getAvailableDestinationKeys(self):
         return set(self.destinationTypeToValueMapping.keys())
 
@@ -58,11 +56,4 @@ class MappingProvider:
         source_key_list = source_type.split(self.DELIMETER)
         value_mappings_key = self.DELIMETER.join([row[key] for key in source_key_list])
 
-        try:
-            result_value = value_mappings[value_mappings_key]
-        except KeyError as e:
-            print("KeyError:", e)
-        
-        return result_value
-    
-
+        return value_mappings[value_mappings_key]

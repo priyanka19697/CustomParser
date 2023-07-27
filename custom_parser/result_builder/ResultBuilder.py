@@ -9,8 +9,8 @@ class Variation:
     def __init__(self) -> None:
         return
 
-    def __str__(self):
-        return str(self.__dict__)
+    def to_json(self):
+        return json.dumps(self.__dict__,default=lambda obj: obj.__dict__)
 
 
 class Article:
@@ -18,16 +18,16 @@ class Article:
         self.article_number = article_number
         self.variations = []
 
-    def __str__(self):
-        return str(self.__dict__)
+    def to_json(self):
+        return json.dumps(self.__dict__,default=lambda obj: obj.__dict__)
 
 
 class Catalog:
     def __init__(self) -> None:
         self.articles = []
 
-    def __str__(self):
-        return str(self.__dict__)
+    def to_json(self):
+        return json.dumps(self.__dict__,default=lambda obj: obj.__dict__)
 
 
 class ResultBuilder:
@@ -36,7 +36,7 @@ class ResultBuilder:
         self.mapping_provider = mapping_provider
         self._create_initial_articles(input_file)
 
-    def process_row(self, row):
+    def _process_row(self, row):
         new_row = {}
         supported_keys = self.mapping_provider.getSupportedKeys()
         available_destination_keys = self.mapping_provider.getAvailableDestinationKeys()
@@ -45,12 +45,12 @@ class ResultBuilder:
                 continue
             else:
                 new_row[k] = v
-            
+        
             for available_key in available_destination_keys:
-                # import pdb;pdb.set_trace()
                 new_row[available_key] = self.mapping_provider.getValue(
                     available_key, row
                 )
+
         return new_row
 
     def make_result(self):
@@ -64,7 +64,7 @@ class ResultBuilder:
             # process each row
             articles_dict = defaultdict(list)
             for row in reader:
-                articles_dict[row["article_number"]].append(self.process_row(row=row))
+                articles_dict[row["article_number"]].append(self._process_row(row=row))
 
             articles = []
             for article_number, article_variations in articles_dict.items():
@@ -81,30 +81,6 @@ class ResultBuilder:
             self.catalog.articles = articles
 
     def _find_common_attributes(self, objects: list) -> list:
-        # Takes in list of objects of same type, then returns
-        # list of attributes that were common across all the objects
-
-        # Parameters:
-        #   objects (list): list of objects
-
-        # Returns
-        #   list: list of attribute keys as strings
-        common_attributes = []
-        result = defaultdict(set)
-        for obj in objects:
-            for k, v in obj.__dict__.items():
-                # skip complex types
-                if type(v) == list:
-                    continue
-                result[k].add(v)
-
-        for attr, value_list in result.items():
-            if len(value_list) == 1:
-                common_attributes.append(attr)
-
-        return common_attributes
-
-    def _find_common_attributes2(self, objects: list) -> list:
         # Takes in list of objects of same type, then returns
         # list of attributes that were common across all the objects
 
@@ -141,7 +117,7 @@ class ResultBuilder:
         # Returns
         #   None
 
-        common_attributes = self._find_common_attributes2(nested_objects)
+        common_attributes = self._find_common_attributes(nested_objects)
 
         reference_obj = nested_objects[0]  # just to get values to bubble up
 
